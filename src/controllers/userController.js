@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const axios = require('axios')
 const userModel = require('../models/userModel')
 
+
 const createUser = async function (req, res) {
     try {
         let requestBody = req.body
@@ -101,7 +102,7 @@ const loginUser = async function (req, res) {
         return res.status(200).send({ status: true, message: "User login successfull", data: { userId: userData._id, token: token } })
 
     } catch (err) {
-       return res.status(500).send({ status: false, msg: err.message })
+        return res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -151,7 +152,7 @@ const updateUser = async function (req, res) {
         if (password) {
             if (!validation.isValid(password)) return res.status(400).send({ status: false, message: "password is Mandatory" })
             if (!validation.isValidPassword(password)) return res.status(400).send({ status: false, message: 'please enter a valid password' })
-            requestBody.password = await bcrypt.hash(password,10)
+            requestBody.password = await bcrypt.hash(password, 10)
         }
         if (address) {
             if (typeof (address) !== 'object') {
@@ -167,34 +168,34 @@ const updateUser = async function (req, res) {
             let userData = await userModel.findById(userId)
             let oldAddress = userData.address
             if (address.shipping) {
-                const {street,city,pincode}=address.shipping
-                if(street) oldAddress.shipping.street = street
-                if(city) oldAddress.shipping.city = city
+                const { street, city, pincode } = address.shipping
+                if (street) oldAddress.shipping.street = street
+                if (city) oldAddress.shipping.city = city
 
                 if (pincode) {
                     if (!validation.isvalidPincode(pincode)) return res.status(400).send({ status: false, message: 'address shipping pincode is mandatory of 6 digit' })
                     oldAddress.shipping.pincode = pincode
                 }
-                
+
             }
             if (address.billing) {
-                const {street,city,pincode}=address.billing
+                const { street, city, pincode } = address.billing
 
-                if(street) oldAddress.billing.street = street
-                if(city) oldAddress.billing.city = city
+                if (street) oldAddress.billing.street = street
+                if (city) oldAddress.billing.city = city
                 if (pincode) {
                     if (!validation.isvalidPincode(pincode)) return res.status(400).send({ status: false, message: 'address billing pincode is mandatory of 6 digit' })
                     oldAddress.billing.pincode = pincode
                 }
-                
+
             }
             requestBody.address = oldAddress
-        } 
-        if(req.files.length>0)
-                requestBody.profileImage = await aws.uploadFile(req.files[0])
-        let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:requestBody},{new:true})
+        }
+        if (req.files.length > 0)
+            requestBody.profileImage = await aws.uploadFile(req.files[0])
+        let updatedData = await userModel.findByIdAndUpdate({ _id: userId }, { $set: requestBody }, { new: true })
 
-        if(!updatedData) return res.status(404).send({ status: false, message: 'User Data Not Found' })
+        if (!updatedData) return res.status(404).send({ status: false, message: 'User Data Not Found' })
 
         return res.status(200).send({ status: true, message: "User Updated Successfully", data: updatedData })
     }

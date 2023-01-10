@@ -5,7 +5,7 @@ const validation = require('../validation/validation')
 const createOrder = async function(req,res){
     try {
         let userId = req.params.userId
-
+      
         if(!validation.isValidRequestBody(req.body))
             return res.status(400).send({ status: false, message: "PLS provide some data to update" })
         let {cartId ,cancellable , status} = req.body
